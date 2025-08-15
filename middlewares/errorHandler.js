@@ -18,13 +18,13 @@ const errorhandler = (err, req, res, next) => {
     }
 
     if(err instanceof CustomErrorHandle){
-        statusCode = err.message;
+        statusCode = err.status;
         data = {
             message: err.message,
         }
     }
 
-    return res.status(statusCode).json();
+    return res.status(statusCode).json(data);
 };
 
 export default errorhandler;

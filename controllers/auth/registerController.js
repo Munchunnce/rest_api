@@ -1,6 +1,8 @@
 import Joi from "joi";
 import CustomErrorHandle from "../../services/CustomErrorHandler.js";
-import { User } from '../../models/index.js'
+import { User } from '../../models/index.js';
+import bcrypt from 'bcrypt';
+import JwtService from "../../services/JwtService.js";
 
 const registerController = {
     async register(req, res, next){
@@ -28,14 +30,38 @@ const registerController = {
         
         // check if user in the database already
         try {
-            const exist = User.exists({ email: req.body.email });
+            const exist = await User.exists({ email: req.body.email });
             if(exist){
                 return next(CustomErrorHandle.alreadyExist('This email is already taken'));
             }
         } catch (err) {
             return next(err);
         }
-        res.json({ message: 'Hello from express' });
+
+        const { name, email, password } = req.body;
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // prepare the model
+
+        const user = new User({
+            name,
+            email,
+            password: hashedPassword
+        });
+
+        // database ke andar save krna hai
+        let access_token;
+        try {
+            const result = await user.save();
+            console.log(result);
+            // token
+            access_token = JwtService.sign({ _id: result._id, role: result.role });
+
+        } catch (err) {
+            return next(err);
+        }
+        res.json({ access_token: access_token });
     }
 };
 
