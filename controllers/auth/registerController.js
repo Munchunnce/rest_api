@@ -1,8 +1,9 @@
 import Joi from "joi";
 import CustomErrorHandle from "../../services/CustomErrorHandler.js";
-import { User } from '../../models/index.js';
+import { RefreshToken, User } from '../../models/index.js';
 import bcrypt from 'bcrypt';
 import JwtService from "../../services/JwtService.js";
+import { REFRESH_SECRET } from "../../config/index.js";
 
 const registerController = {
     async register(req, res, next){
@@ -52,16 +53,19 @@ const registerController = {
 
         // database ke andar save krna hai
         let access_token;
+        let refresh_token;
         try {
             const result = await user.save();
-            console.log(result);
             // token
             access_token = JwtService.sign({ _id: result._id, role: result.role });
+            refresh_token = JwtService.sign({ _id: result._id, role: result.role }, '1y', REFRESH_SECRET);
+            // database whiteList
+            await RefreshToken.create({ token: refresh_token });
 
         } catch (err) {
             return next(err);
         }
-        res.json({ access_token: access_token });
+        res.json({ access_token, refresh_token });
     }
 };
 
