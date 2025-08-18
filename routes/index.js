@@ -1,5 +1,5 @@
 import express from 'express'
-import { registerController, loginController, userController, refreshController } from '../controllers/index.js';
+import { registerController, loginController, userController, refreshController, productController } from '../controllers/index.js';
 import auth from '../middlewares/auth.js';
 
 const router = express.Router();
@@ -10,6 +10,9 @@ router.post('/login', loginController.login);
 router.get('/me',auth, userController.me);
 router.post('/refresh', refreshController.refresh);
 router.post('/logout', auth, loginController.logout);
+
+// Products
+router.post('/products', productController.store);
 
 
 export default router;

@@ -4,9 +4,14 @@ import errorhandler from './middlewares/errorHandler.js';
 const app = express();
 import routes from './routes/index.js';
 import mongoose from 'mongoose';
+import path from 'path';
+import { fileURLToPath } from "url";   // ⬅️ Add this
 
-app.use(express.json());
-app.use('/api', routes);
+// Fix for __dirname in ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
 
 // database connection
 
@@ -18,7 +23,10 @@ mongoose.connect(MONGO_CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopolo
         console.log('Error connecting to MongoDB:', error);
     }); 
 
-
+global.appRoot = path.resolve(__dirname);
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use('/api', routes);
 app.use(errorhandler);
 
 app.listen(APP_PORT, () => console.log(`Lisenting on port ${APP_PORT}.`));
