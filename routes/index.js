@@ -1,6 +1,7 @@
 import express from 'express'
 import { registerController, loginController, userController, refreshController, productController } from '../controllers/index.js';
 import auth from '../middlewares/auth.js';
+import admin from '../middlewares/admin.js';
 
 const router = express.Router();
 
@@ -12,7 +13,9 @@ router.post('/refresh', refreshController.refresh);
 router.post('/logout', auth, loginController.logout);
 
 // Products
-router.post('/products', productController.store);
+router.post('/products',[auth, admin], productController.store);
+// router.post('/products/:id',admin, productController.store);
+
 
 
 export default router;
