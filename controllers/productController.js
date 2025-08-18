@@ -2,8 +2,8 @@ import { Product } from "../models/index.js";
 import multer from "multer";
 import path from 'path';
 import CustomErrorHandle from "../services/CustomErrorHandler.js";
-import Joi from "joi";
 import fs from 'fs';
+import productSchema from "../validator/productValidator.js";
 
 
 const storage = multer.diskStorage({
@@ -26,11 +26,6 @@ const productController = {
             }
             const filePath = req.file.path;
             // validate
-            const productSchema = Joi.object({
-                name: Joi.string().required(),
-                price: Joi.number().required(),
-                size: Joi.string().required(),
-            });
             const { error } = productSchema.validate(req.body);
                             
             if(error){
@@ -52,6 +47,48 @@ const productController = {
                     size,
                     image: filePath
                 })
+            } catch (err) {
+                return next(err);
+            }
+            res.status(201).json(document);
+        })
+    },
+
+    async update(req, res, next) {
+        // Multipart from data
+        handlerMultipartData(req, res, async (err) => {
+            if(err){
+                return next(CustomErrorHandle.serverError(err.message));
+            }
+
+            let filePath;
+            if(req.file){
+                filePath = req.file.path;
+            }
+            // validate
+            const { error } = productSchema.validate(req.body);
+                            
+            if(error){
+                //Delete the uploaded file
+                if(req.file){
+                    fs.unlink(`${appRoot}/${filePath}`, (err) => {
+                        if(err){
+                            return next(CustomErrorHandle.serverError(err.message));
+                        }
+                    });
+                }
+                return next(error);
+            }
+
+            const { name, price, size } = req.body;
+            let document;
+            try {
+                document = await Product.findByIdAndUpdate({_id: req.params.id},{
+                    name,
+                    price,
+                    size,
+                    ...(req.file && { image: filePath })
+                }, { new: true })
             } catch (err) {
                 return next(err);
             }

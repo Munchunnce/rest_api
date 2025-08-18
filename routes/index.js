@@ -14,7 +14,7 @@ router.post('/logout', auth, loginController.logout);
 
 // Products
 router.post('/products',[auth, admin], productController.store);
-// router.post('/products/:id',admin, productController.store);
+router.put('/products/:id',[auth, admin], productController.update);
 
 
 
