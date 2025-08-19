@@ -109,6 +109,18 @@ const productController = {
             }
         });
         res.json(document);
+    },
+
+    // get All products
+    async index(req, res, next) {
+        let document;
+        // pagination mongoose-pagination
+        try {
+            document = await Product.find().select('-updated -__v').sort({_id: -1});
+        } catch (err) {
+            return next(CustomErrorHandle.serverError());
+        }
+        res.json(document);
     }
 };
 
