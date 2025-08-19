@@ -9,7 +9,8 @@ const productSchema = new Schema({
     size: { type: String, require: true },
     image: { type: String, require: true, get: (image) => {
         // http://localhost:5000/uploads/1755529139439-209511301.15726292.png
-        return `${APP_URL}${image}`;
+        if (!image) return null;
+        return `${APP_URL}/${image}`;
     } },
 }, { timestamps: true, toJSON: { getters: true }});
 

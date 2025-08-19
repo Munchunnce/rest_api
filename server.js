@@ -27,6 +27,7 @@ global.appRoot = path.resolve(__dirname);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use('/api', routes);
+app.use('/uploads', express.static('uploads'));
 app.use(errorhandler);
 
 app.listen(APP_PORT, () => console.log(`Lisenting on port ${APP_PORT}.`));

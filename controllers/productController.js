@@ -24,7 +24,7 @@ const productController = {
             if(err){
                 return next(CustomErrorHandle.serverError(err.message));
             }
-            const filePath = req.file.path;
+            const filePath = req.file.path.replace(/\\/g, '/');
             // validate
             const { error } = productSchema.validate(req.body);
                             
@@ -63,7 +63,7 @@ const productController = {
 
             let filePath;
             if(req.file){
-                filePath = req.file.path;
+                filePath = req.file.path.replace(/\\/g, '/');
             }
             // validate
             const { error } = productSchema.validate(req.body);
