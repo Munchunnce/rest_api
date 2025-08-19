@@ -102,7 +102,7 @@ const productController = {
             return next(new Error('Nothing to delete!'));
         }
         //image
-        const imagePath = document.image;
+        const imagePath = document._doc.image;
         fs.unlink(`${appRoot}/${imagePath}`, (err) => {
             if(err){
                 return next(CustomErrorHandle.serverError());
@@ -116,7 +116,18 @@ const productController = {
         let document;
         // pagination mongoose-pagination
         try {
-            document = await Product.find().select('-updated -__v').sort({_id: -1});
+            document = await Product.find().select('-updatedAt -__v').sort({_id: -1});
+        } catch (err) {
+            return next(CustomErrorHandle.serverError());
+        }
+        res.json(document);
+    },
+
+    // get single product
+    async show(req, res, next) {
+        let document;
+        try {
+            document = await Product.findOne({_id: req.params.id }).select('-updatedAt -__v');
         } catch (err) {
             return next(CustomErrorHandle.serverError());
         }
