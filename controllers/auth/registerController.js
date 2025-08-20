@@ -27,7 +27,7 @@ const registerController = {
         const { error } = registerSchema.validate(req.body);
         if(error){
             return next(error);
-        }
+        };
         
         // check if user in the database already
         try {
@@ -37,7 +37,7 @@ const registerController = {
             }
         } catch (err) {
             return next(err);
-        }
+        };
 
         const { name, email, password } = req.body;
         // Hash password
@@ -64,7 +64,8 @@ const registerController = {
 
         } catch (err) {
             return next(err);
-        }
+        };
+        
         res.json({ access_token, refresh_token });
     }
 };
