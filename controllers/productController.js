@@ -51,7 +51,7 @@ const productController = {
                 return next(err);
             }
             res.status(201).json(document);
-        })
+        });
     },
 
     async update(req, res, next) {
@@ -93,7 +93,7 @@ const productController = {
                 return next(err);
             }
             res.status(201).json(document);
-        })
+        });
     },
 
     async destroy(req, res, next) {
@@ -132,7 +132,7 @@ const productController = {
             return next(CustomErrorHandle.serverError());
         }
         res.json(document);
-    }
+    };
 };
 
 
